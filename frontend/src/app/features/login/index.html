@@ -1,0 +1,50 @@
+﻿<div class="auth-page">
+  <main class="auth-card">
+    <a class="auth-brand" routerLink="/"><span aria-hidden="true">✚</span> PetCare</a>
+    <p class="eyebrow">Your pet care workspace</p>
+    <h1>Welcome back.</h1>
+    <p class="muted">Sign in to your pets' profiles and vaccination records.</p>
+    <form class="form-stack" [formGroup]="form" (ngSubmit)="submit()">
+      <label for="email"
+        >Email<input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="you@example.com"
+          required
+          [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
+          aria-describedby="email-error"
+        />
+        <span id="email-error" class="field-error">
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            Enter a valid email address.
+          }
+        </span>
+      </label>
+      <label for="password"
+        >Password<input
+          id="password"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          required
+          [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
+          aria-describedby="password-error"
+        />
+        <span id="password-error" class="field-error">
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            Enter your password.
+          }
+        </span>
+      </label>
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+      <button type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+    <p class="auth-footer">New to PetCare? <a routerLink="/signup">Create an account</a></p>
+  </main>
+</div>

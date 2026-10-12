@@ -1,0 +1,25 @@
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="workspace">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/dashboard">
+      <span class="brand-mark" aria-hidden="true">✚</span>
+      <span>PetCare<small>Vaccination tracker</small></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a routerLink="/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page">Overview</a>
+      <a
+        routerLink="/pets"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+        >My pets</a
+      >
+      <a routerLink="/pets/add" routerLinkActive="active" ariaCurrentWhenActive="page">Add a pet</a>
+    </nav>
+    <div class="sidebar-footer">
+      <p>A little care.<br />A healthier life together.</p>
+      <button type="button" class="signout" (click)="auth.logout()">Sign out</button>
+    </div>
+  </aside>
+  <div id="main-content" class="workspace-content" tabindex="-1"><router-outlet /></div>
+</div>

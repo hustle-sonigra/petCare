@@ -1,0 +1,20 @@
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Angular / Node
+node_modules/
+frontend/dist/
+frontend/.angular/
+npm-debug.log*
+
+# Java / Maven
+backend/target/
+backend/tessdata/
+
+# IDE and operating system
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

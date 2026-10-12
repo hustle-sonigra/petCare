@@ -1,0 +1,37 @@
+<main class="page-shell">
+  <a class="back-link" [routerLink]="['/pets', petId]">← Pet vaccination records</a>
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Vaccination certificate</p>
+      <h1>{{ vaccineName() || 'Certificate' }}</h1>
+      <p class="page-description">View the original document kept with this vaccination.</p>
+    </div>
+    @if (metadata()) {
+      <button type="button" (click)="download()">Download certificate</button>
+    }
+  </header>
+  @if (loading()) {
+    <p class="loading-state" role="status">Opening certificate…</p>
+  } @else if (error()) {
+    <div class="error" role="alert">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="load()">Try again</button>
+    </div>
+  } @else if (metadata(); as certificate) {
+    <section class="panel certificate-preview" aria-label="Certificate preview">
+      <div class="document-heading">
+        <strong>{{ certificate.originalFilename }}</strong
+        ><span>{{ certificate.sizeBytes / 1024 | number: '1.0-0' }} KB</span>
+      </div>
+      @if (pdfUrl(); as pdf) {
+        <iframe [src]="pdf" [title]="'Certificate: ' + certificate.originalFilename"></iframe>
+      } @else {
+        <img [src]="blobUrl()" [alt]="'Vaccination certificate: ' + certificate.originalFilename" />
+      }
+      <p class="preview-help">
+        If your browser cannot display the document, use Download certificate to open it on your
+        device.
+      </p>
+    </section>
+  }
+</main>

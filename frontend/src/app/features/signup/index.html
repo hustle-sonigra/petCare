@@ -1,0 +1,75 @@
+﻿<div class="auth-page">
+  <main class="auth-card">
+    <a class="auth-brand" routerLink="/"><span aria-hidden="true">✚</span> PetCare</a>
+    <p class="eyebrow">Start caring together</p>
+    <h1>A home for their health.</h1>
+    <p class="muted">
+      Create your account, add your pets, and keep their vaccination records close.
+    </p>
+    <form class="form-stack" [formGroup]="form" (ngSubmit)="submit()">
+      <label
+        >Name<input
+          formControlName="name"
+          autocomplete="name"
+          required
+          maxlength="120"
+          aria-describedby="name-error"
+        />
+        <span id="name-error" class="field-error">
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            Enter your name (up to 120 characters).
+          }
+        </span>
+      </label>
+      <label
+        >Email<input
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          required
+          aria-describedby="email-error"
+        />
+        <span id="email-error" class="field-error">
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            Enter a valid email address.
+          }
+        </span>
+      </label>
+      <label
+        >Password<input
+          type="password"
+          formControlName="password"
+          autocomplete="new-password"
+          required
+          minlength="8"
+          aria-describedby="password-help password-error"
+        /><small id="password-help">Use at least 8 characters.</small>
+        <span id="password-error" class="field-error">
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            Your password needs at least 8 characters.
+          }
+        </span>
+      </label>
+      <label
+        >Time zone<input
+          formControlName="timezone"
+          required
+          placeholder="Asia/Kolkata"
+          aria-describedby="timezone-help"
+        /><small id="timezone-help"
+          >Your local time zone, for example Asia/Kolkata or Europe/London.</small
+        >
+        @if (form.controls.timezone.touched && form.controls.timezone.invalid) {
+          <span class="field-error">Enter a time zone.</span>
+        }
+      </label>
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+      <button type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Creating account…' : 'Create account' }}
+      </button>
+    </form>
+    <p class="auth-footer">Already have an account? <a routerLink="/login">Sign in</a></p>
+  </main>
+</div>

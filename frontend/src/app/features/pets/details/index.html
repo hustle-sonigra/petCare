@@ -1,0 +1,137 @@
+﻿<main class="page-shell">
+  <a class="back-link" routerLink="/pets">← My pets</a>
+  @if (loading()) {
+    <p class="loading-state" role="status">Loading pet and vaccination records…</p>
+  } @else if (error()) {
+    <div class="error" role="alert">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="load()">Try again</button>
+    </div>
+  } @else if (pet(); as profile) {
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">Pet profile</p>
+        <h1>{{ profile.name }}</h1>
+        <p class="pet-description">
+          {{ profile.species.toLowerCase() }}{{ profile.breed ? ' · ' + profile.breed : '' }}
+        </p>
+        @if (profile.birthDate) {
+          <p class="muted">Born {{ profile.birthDate | date: 'longDate' }}</p>
+        }
+      </div>
+      <a class="button" [routerLink]="['/pets', profile.id, 'vaccinations', 'add']"
+        >+ Record vaccination</a
+      >
+    </header>
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">A history of care</p>
+        <h2>Vaccination records</h2>
+      </div>
+      <span class="muted">{{ vaccinations().length }} records</span>
+    </div>
+    @if (!vaccinations().length) {
+      <section class="empty-state">
+        <span class="empty-mark" aria-hidden="true">✚</span>
+        <h2>Keep their care close</h2>
+        <p>Record {{ profile.name }}'s first vaccination to start their health history.</p>
+        <a class="button" [routerLink]="['/pets', profile.id, 'vaccinations', 'add']"
+          >Record a vaccination</a
+        >
+      </section>
+    } @else {
+      <div class="records">
+        @for (record of vaccinations(); track record.id) {
+          <article class="panel record">
+            <h3>{{ record.vaccineName }}</h3>
+            <dl>
+              <div>
+                <dt>Administered</dt>
+                <dd>
+                  <time [attr.datetime]="record.administeredOn">{{
+                    record.administeredOn | date: 'mediumDate'
+                  }}</time>
+                </dd>
+              </div>
+              <div>
+                <dt>Recorded next due date</dt>
+                <dd>
+                  @if (record.nextDueOn) {
+                    <time [attr.datetime]="record.nextDueOn">{{
+                      record.nextDueOn | date: 'mediumDate'
+                    }}</time>
+                  } @else {
+                    Not recorded
+                  }
+                </dd>
+              </div>
+              @if (record.provider) {
+                <div>
+                  <dt>Veterinarian or clinic</dt>
+                  <dd>{{ record.provider }}</dd>
+                </div>
+              }
+            </dl>
+            @if (record.notes) {
+              <p class="record-notes">{{ record.notes }}</p>
+            }
+            <section
+              class="certificate-section"
+              [attr.aria-label]="record.vaccineName + ' certificate'"
+            >
+              @if (certificates()[record.id]; as certificate) {
+                @if (certificate.loading) {
+                  <p class="certificate-status" role="status">Checking certificate…</p>
+                } @else if (certificate.metadata; as metadata) {
+                  <div class="certificate-info">
+                    <span class="certificate-mark" aria-hidden="true">▤</span>
+                    <div>
+                      <p class="eyebrow">Vaccination certificate</p>
+                      <p class="certificate-filename">{{ metadata.originalFilename }}</p>
+                      <small
+                        >{{ metadata.contentType === 'application/pdf' ? 'PDF' : 'Image' }} ·
+                        {{ metadata.sizeBytes / 1024 | number: '1.0-0' }} KB</small
+                      >
+                    </div>
+                  </div>
+                  <div class="certificate-actions">
+                    <a
+                      class="button secondary"
+                      [routerLink]="['/pets', profile.id, 'vaccinations', record.id, 'certificate']"
+                      [attr.aria-label]="'View certificate for ' + record.vaccineName"
+                      >View certificate</a
+                    >
+                    <button
+                      type="button"
+                      [disabled]="certificate.downloading"
+                      (click)="downloadCertificate(record.id)"
+                      [attr.aria-label]="'Download certificate for ' + record.vaccineName"
+                    >
+                      {{ certificate.downloading ? 'Downloading…' : 'Download' }}
+                    </button>
+                  </div>
+                } @else if (!certificate.error) {
+                  <p class="certificate-status">No certificate uploaded.</p>
+                }
+                @if (certificate.error) {
+                  <div class="certificate-error" role="alert">
+                    <p>{{ certificate.error }}</p>
+                    @if (!certificate.metadata) {
+                      <button
+                        type="button"
+                        class="button secondary"
+                        (click)="loadCertificate(record.id)"
+                      >
+                        Try again
+                      </button>
+                    }
+                  </div>
+                }
+              }
+            </section>
+          </article>
+        }
+      </div>
+    }
+  }
+</main>

@@ -1,0 +1,73 @@
+﻿<main class="page-shell narrow" [attr.aria-busy]="stage() === 'extracting' || saving()">
+  @if (stage() !== 'extracting' && !saving()) {
+    <a class="back-link" [routerLink]="['/pets', petId]">← Pet profile</a>
+  }
+  <p class="eyebrow">Vaccination history</p>
+  <h1>Record a vaccination</h1>
+  @if (stage() === 'upload') {
+    <section class="panel certificate-field" aria-labelledby="upload-heading">
+      <h2 id="upload-heading">Start with your certificate</h2>
+      <p>Upload a certificate to suggest the vaccination details. You will review every field before saving.</p>
+      <label for="certificate">Vaccination certificate</label>
+      <input #certificateInput id="certificate" type="file" accept=".pdf,.jpg,.jpeg,.png"
+        aria-describedby="certificate-help certificate-error" (change)="onCertificateSelected($event)" />
+      <small id="certificate-help">PDF, JPG, or PNG. Up to 5 MB and 10 PDF pages. Nothing is saved during extraction.</small>
+      @if (certificateFile) { <p class="certificate-selected">Selected: {{ certificateFile.name }}</p> }
+      <p id="certificate-error" class="field-error" role="alert">{{ certificateError() }}</p>
+      <div class="form-actions">
+        <button type="button" [disabled]="!certificateFile || !!certificateError()" (click)="extract()">Extract details</button>
+        <button type="button" class="button secondary" (click)="manualEntry()">Enter details manually</button>
+      </div>
+    </section>
+  } @else if (stage() === 'extracting') {
+    <section class="panel processing" role="status" aria-live="polite" aria-atomic="true">
+      <span class="spinner" aria-hidden="true"></span>
+      <h2>Reading your certificate…</h2>
+      <p>Finding the clinic, vaccine and dates. Scanned documents may take longer.</p>
+      <p>Keep this page open. Your record has not been saved.</p>
+    </section>
+  } @else {
+    <h2 id="review-heading" tabindex="-1">Review and verify the details</h2>
+    <p>Compare each value with your certificate. Correct any mistakes and confirm each field, including optional fields left empty.</p>
+    @if (certificateFile) { <p class="certificate-selected">Certificate: {{ certificateFile.name }}</p> }
+    <form class="panel form-panel form-stack" [formGroup]="form" (ngSubmit)="submit()">
+      <fieldset [disabled]="saving()" class="review-fields">
+        <label for="vaccine">Vaccine name</label>
+        <input id="vaccine" formControlName="vaccineName" required maxlength="120"
+          aria-describedby="vaccine-warning vaccine-error" [attr.aria-invalid]="form.controls.vaccineName.touched && form.controls.vaccineName.invalid" />
+        <p id="vaccine-warning" class="verification-warning">{{ warning('vaccineName') }}</p>
+        @if (extraction()?.evidence?.vaccineName; as text) { <small>Detected text: {{ text }}</small> }
+        <span id="vaccine-error" class="field-error">@if (form.controls.vaccineName.touched && form.controls.vaccineName.invalid) { Enter a vaccine name up to 120 characters. }</span>
+        <label class="verify-check"><input type="checkbox" [formControl]="verification.controls.vaccineName" [attr.aria-invalid]="verification.controls.vaccineName.touched && verification.controls.vaccineName.invalid" aria-describedby="vaccine-warning" />I verified the vaccine name.</label>
+
+        <label for="administered">Administration date</label>
+        <input id="administered" type="date" formControlName="administeredOn" required
+          aria-describedby="admin-warning date-error" [attr.aria-invalid]="form.controls.administeredOn.touched && form.controls.administeredOn.invalid" />
+        <p id="admin-warning" class="verification-warning">{{ warning('administeredOn') }}</p>
+        @if (extraction()?.evidence?.administeredOn; as text) { <small>Detected text: {{ text }}</small> }
+        <span id="date-error" class="field-error">@if (form.controls.administeredOn.touched && form.controls.administeredOn.invalid) { Enter the date the vaccination was given. }</span>
+        <label class="verify-check"><input type="checkbox" [formControl]="verification.controls.administeredOn" [attr.aria-invalid]="verification.controls.administeredOn.touched && verification.controls.administeredOn.invalid" aria-describedby="admin-warning" />I verified the administration date.</label>
+
+        <label for="due">Next due date <small>Optional</small></label>
+        <input id="due" type="date" formControlName="nextDueOn" aria-describedby="due-warning" />
+        <p id="due-warning" class="verification-warning">{{ warning('nextDueOn') }}</p>
+        @if (extraction()?.evidence?.nextDueOn; as text) { <small>Detected text: {{ text }}</small> }
+        <label class="verify-check"><input type="checkbox" [formControl]="verification.controls.nextDueOn" [attr.aria-invalid]="verification.controls.nextDueOn.touched && verification.controls.nextDueOn.invalid" aria-describedby="due-warning" />I verified the due date, or confirmed it is unavailable.</label>
+
+        <label for="provider">Veterinarian or clinic <small>Optional</small></label>
+        <input id="provider" formControlName="provider" maxlength="120" aria-describedby="clinic-warning" />
+        <p id="clinic-warning" class="verification-warning">{{ warning('clinicName') }}</p>
+        @if (extraction()?.evidence?.clinicName; as text) { <small>Detected text: {{ text }}</small> }
+        <label class="verify-check"><input type="checkbox" [formControl]="verification.controls.clinicName" [attr.aria-invalid]="verification.controls.clinicName.touched && verification.controls.clinicName.invalid" aria-describedby="clinic-warning" />I verified the clinic, or confirmed it is unavailable.</label>
+
+        <label for="notes">Notes <small>Optional</small></label>
+        <textarea id="notes" formControlName="notes" placeholder="Anything to keep with this record"></textarea>
+      </fieldset>
+      <div class="form-actions">
+        <button type="submit" [disabled]="saving() || verification.invalid || form.invalid">{{ saving() ? 'Saving…' : savedRecordId() ? 'Retry certificate upload' : 'Save verified vaccination' }}</button>
+        @if (!savedRecordId()) { <button type="button" class="button secondary" [disabled]="saving()" (click)="startOver()">Start over</button> }
+      </div>
+    </form>
+  }
+  @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+</main>

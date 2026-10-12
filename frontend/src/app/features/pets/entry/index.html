@@ -1,0 +1,38 @@
+﻿<main class="page-shell">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Your companions</p>
+      <h1>My pets</h1>
+      <p class="page-description">A place for every pet and their vaccination history.</p>
+    </div>
+    <a class="button" routerLink="/pets/add">+ Add a pet</a>
+  </header>
+  @if (loading()) {
+    <p class="loading-state" role="status">Loading your pets…</p>
+  } @else if (error()) {
+    <div class="error" role="alert">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="loadPets()">Try again</button>
+    </div>
+  } @else if (!pets().length) {
+    <section class="empty-state">
+      <span class="empty-mark" aria-hidden="true">♡</span>
+      <h2>Meet your pet care space</h2>
+      <p>Add your first pet to start keeping their vaccination records together.</p>
+      <a class="button" routerLink="/pets/add">Add your first pet</a>
+    </section>
+  } @else {
+    <section class="pet-list" aria-label="Pet profiles">
+      @for (pet of pets(); track pet.id) {
+        <a class="pet-card" [routerLink]="['/pets', pet.id]"
+          ><span class="pet-avatar" aria-hidden="true">{{ pet.name.charAt(0).toUpperCase() }}</span>
+          <div>
+            <h2>{{ pet.name }}</h2>
+            <p>{{ pet.species.toLowerCase() }}{{ pet.breed ? ' · ' + pet.breed : '' }}</p>
+            <span class="pet-card-link">View health records <span aria-hidden="true">→</span></span>
+          </div></a
+        >
+      }
+    </section>
+  }
+</main>

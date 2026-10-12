@@ -1,0 +1,49 @@
+﻿<main class="page-shell narrow">
+  <a class="back-link" routerLink="/pets">← My pets</a>
+  <p class="eyebrow">A new companion</p>
+  <h1>Add a pet</h1>
+  <p class="page-description">
+    Start with the basics. You can add vaccination records once their profile is ready.
+  </p>
+  <form class="panel form-panel form-stack" [formGroup]="form" (ngSubmit)="submit()">
+    <label
+      >Pet's name<input
+        formControlName="name"
+        autocomplete="off"
+        required
+        maxlength="100"
+        placeholder="e.g. Milo"
+        aria-describedby="name-error"
+      />
+      <span id="name-error" class="field-error">
+        @if (form.controls.name.touched && form.controls.name.invalid) {
+          Enter your pet's name (up to 100 characters).
+        }
+      </span>
+    </label>
+    <label
+      >Species<select formControlName="species">
+        <option value="DOG">Dog</option>
+        <option value="CAT">Cat</option>
+        <option value="RABBIT">Rabbit</option>
+        <option value="BIRD">Bird</option>
+        <option value="OTHER">Other</option>
+      </select></label
+    >
+    <div class="form-grid">
+      <label
+        >Breed <small>Optional</small
+        ><input formControlName="breed" placeholder="e.g. Golden retriever" /></label
+      ><label
+        >Birth date <small>Optional, if known</small><input type="date" formControlName="birthDate"
+      /></label>
+    </div>
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+    <div class="form-actions">
+      <button type="submit" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Add pet' }}</button
+      ><a class="button secondary" routerLink="/pets">Cancel</a>
+    </div>
+  </form>
+</main>

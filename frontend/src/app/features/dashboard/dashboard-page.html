@@ -1,0 +1,133 @@
+﻿<main class="page-shell">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Your pet care workspace</p>
+      <h1>A little care, every day.</h1>
+      <p class="page-description">Your pets, their vaccination history, and what's coming next.</p>
+    </div>
+    <a class="button" routerLink="/pets/add">+ Add a pet</a>
+  </header>
+  @if (loading()) {
+    <p class="loading-state" role="status">Gathering your pets' records…</p>
+  } @else if (error()) {
+    <div class="error" role="alert">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="load()">Try again</button>
+    </div>
+  } @else {
+    <section class="summary-grid" aria-label="Vaccination summary">
+      <a class="summary-item" routerLink="/pets"
+        ><p>My pets</p>
+        <strong>{{ pets().length }}</strong
+        ><span>Pet profiles <span aria-hidden="true"></span>➡️</span></a
+      >
+      <a class="summary-item upcoming-stat" href="#upcoming"
+        ><p>Upcoming</p>
+        <strong>{{ upcoming().length }}</strong
+        ><span>Due within 30 days</span></a
+      >
+      <a class="summary-item overdue-stat" href="#overdue"
+        ><p>Overdue</p>
+        <strong>{{ overdue().length }}</strong
+        ><span>Recorded dates to review</span></a
+      >
+      <a class="summary-item" href="#history"
+        ><p>Vaccinations</p>
+        <strong>{{ records().length }}</strong
+        ><span>Records kept together</span></a
+      >
+    </section>
+    <section class="schedule-grid" aria-label="Recorded due dates">
+      <article id="upcoming" class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Coming up</p>
+            <h2>Upcoming vaccinations</h2>
+          </div>
+          <span class="count-badge">{{ upcoming().length }}</span>
+        </div>
+        @for (record of upcoming(); track record.id) {
+          <a class="schedule-record" [routerLink]="['/pets', record.petId]"
+            ><div>
+              <strong>{{ record.vaccineName }}</strong
+              ><span>{{ record.petName }}</span>
+            </div>
+            <time [attr.datetime]="record.nextDueOn">{{
+              record.nextDueOn | date: 'mediumDate'
+            }}</time></a
+          >
+        } @empty {
+          <p class="schedule-empty">No recorded due dates in the next 30 days.</p>
+        }
+      </article>
+      <article id="overdue" class="panel overdue-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Needs a look</p>
+            <h2>Overdue vaccinations</h2>
+          </div>
+          <span class="count-badge">{{ overdue().length }}</span>
+        </div>
+        @for (record of overdue(); track record.id) {
+          <a class="schedule-record" [routerLink]="['/pets', record.petId]"
+            ><div>
+              <strong>{{ record.vaccineName }}</strong
+              ><span>{{ record.petName }}</span>
+            </div>
+            <time [attr.datetime]="record.nextDueOn">{{
+              record.nextDueOn | date: 'mediumDate'
+            }}</time></a
+          >
+        } @empty {
+          <p class="schedule-empty">No overdue dates on your latest records.</p>
+        }
+      </article>
+    </section>
+    <p class="schedule-note">
+      Due dates use the latest record for each named vaccine and your device's local date. Confirm
+      vaccination schedules with your veterinarian.
+    </p>
+    <section id="history" class="history-section" aria-label="Recent vaccination history">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Their care, on record</p>
+          <h2>Recent vaccinations</h2>
+        </div>
+        <a routerLink="/pets">View pets →</a>
+      </div>
+      @if (recent().length) {
+        <div class="panel history-list">
+          @for (record of recent(); track record.id) {
+            <a class="schedule-record" [routerLink]="['/pets', record.petId]"
+              ><div>
+                <strong>{{ record.vaccineName }}</strong
+                ><span>{{ record.petName }}</span>
+              </div>
+              <div class="record-date">
+                <small>Administered</small
+                ><time [attr.datetime]="record.administeredOn">{{
+                  record.administeredOn | date: 'mediumDate'
+                }}</time>
+              </div></a
+            >
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <span class="empty-mark" aria-hidden="true">✚</span>
+          <h2>Their story starts here</h2>
+          <p>
+            {{
+              pets().length
+                ? 'Choose a pet to record their first vaccination.'
+                : 'Add your first pet, then bring their vaccination records together.'
+            }}
+          </p>
+          <a class="button" [routerLink]="pets().length ? '/pets' : '/pets/add'">{{
+            pets().length ? 'Choose a pet' : 'Add your first pet'
+          }}</a>
+        </div>
+      }
+    </section>
+  }
+</main>

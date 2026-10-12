@@ -1,0 +1,12 @@
+CREATE TABLE owner (
+    id UUID PRIMARY KEY,
+    name VARCHAR(120) NOT NULL,
+    email VARCHAR(320) NOT NULL UNIQUE,
+    password_hash VARCHAR(512) NOT NULL,
+    timezone VARCHAR(80) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+ALTER TABLE pets
+    ADD CONSTRAINT fk_pets_owner FOREIGN KEY (owner_id) REFERENCES owner (id);
