@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.pettracker.features.pets.PetController;
@@ -51,4 +54,25 @@ public class VaccinationController {
     public record VaccinationResponse(UUID id, UUID petId, String vaccineName, LocalDate administeredOn, LocalDate nextDueOn, String provider, String notes) {
         static VaccinationResponse from(VaccinationRecord record) { return new VaccinationResponse(record.getId(), record.getPet().getId(), record.getVaccineName(), record.getAdministeredOn(), record.getNextDueOn(), record.getProvider(), record.getNotes()); }
     }
+    @DeleteMapping("/vaccinations/{recordId}")
+@ResponseStatus(HttpStatus.NO_CONTENT)
+@Transactional
+public void delete(
+        @PathVariable UUID recordId,
+        HttpServletRequest request
+) {
+    UUID ownerId = owner(request);
+
+    VaccinationRecord record = records.findById(recordId)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Vaccination not found"
+            ));
+
+    // Verify that the signed-in owner owns this vaccination's pet.
+    pets.find(record.getPet().getId(), ownerId);
+
+    records.delete(record);
+}
+
+
 }

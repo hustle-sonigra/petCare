@@ -35,6 +35,8 @@ export class PetDetails {
   readonly vaccinations = signal<VaccinationRecord[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
+  readonly deletingIds = signal<string[]>([]);
+  readonly deleteError = signal('');
   readonly certificates = signal<Partial<Record<string, CertificateState>>>({});
 
   constructor() {
@@ -126,4 +128,50 @@ export class PetDetails {
       },
     }));
   }
+
+  deleteVaccine(recordId:string):void{
+    // i have the correct recordId with me , this particular recordId has to be deleted 
+    // the important point here is to have this deleted and make sure to again redirect here 
+    // on the same page i am currently on . 
+    // i pass the parameter vaccine id as it will be useful .
+    
+    // check if deletion is on for this or not .
+   if (this.deletingIds().includes(recordId)) return;
+   if (!window.confirm('Delete this vaccination record?')) return;
+
+   // add this particular id in the list that considers the ones to be deleted
+  this.deleteError.set('');
+  this.deletingIds.update((ids) => [...ids, recordId]);
+
+  this.api.deleteVaccine(recordId).pipe(takeUntilDestroyed(this.destroyRef))
+  .subscribe({
+    next: () => {
+      this.vaccinations.update((records)=>records.filter((record)=>record.id!==recordId),);
+      this.certificates.update((states)=>{
+        const remaining = {...states};
+        delete remaining[recordId];
+        return remaining;
+      });
+      this.deletingIds.update((ids) =>
+          ids.filter((id) => id !== recordId),
+        );
+    },
+    error: () => {
+        this.deletingIds.update((ids) =>
+          ids.filter((id) => id !== recordId),
+        );
+        this.deleteError.set(
+          'Could not delete the vaccination. Please try again.',
+        );
+    },
+  });
+  }
+  // DB structure : 
+  // there has to be an owner 
+  // each pet created is linked to an owner
+  // each vaccination record has a mention of the pet associated to the vaccine 
+  // What we have currently is a vaccine record 
+  // we need to move from that to a pet 
+  // get the pet from the vaccine record 
+  // from that get the 
 }

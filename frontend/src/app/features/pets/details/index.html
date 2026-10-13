@@ -30,6 +30,9 @@
       </div>
       <span class="muted">{{ vaccinations().length }} records</span>
     </div>
+    @if (deleteError()) {
+  <p class="error" role="alert">{{ deleteError() }}</p>
+}
     @if (!vaccinations().length) {
       <section class="empty-state">
         <span class="empty-mark" aria-hidden="true">✚</span>
@@ -75,6 +78,14 @@
             @if (record.notes) {
               <p class="record-notes">{{ record.notes }}</p>
             }
+<button
+  type="button"
+  (click)="deleteVaccine(record.id)"
+  [disabled]="deletingIds().includes(record.id)"
+>
+  {{ deletingIds().includes(record.id) ? 'Deleting…' : 'Delete' }}
+</button>
+
             <section
               class="certificate-section"
               [attr.aria-label]="record.vaccineName + ' certificate'"

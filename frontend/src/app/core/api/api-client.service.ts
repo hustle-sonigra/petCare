@@ -127,4 +127,10 @@ downloadVaccinationCertificate(vaccinationId: string): Observable<Blob> {
     { responseType: 'blob' },
   );
 }
+
+deleteVaccine(recordId: string):Observable<void>{
+return this.http.delete<void>(
+    `${this.apiUrl}/vaccinations/${recordId}`,
+  );
+}
 }
