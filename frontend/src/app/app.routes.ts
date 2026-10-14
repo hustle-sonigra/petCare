@@ -10,6 +10,7 @@ import { authGuard } from './core/auth/auth.guard';
 import { AddPet } from './features/pets/add/entry';
 import { Workspace } from './shared/layout/workspace';
 import { CertificatePage } from './features/vaccinations/certificate/certificate';
+import { UpdateRecord } from './features/vaccinations/update/js';
 
 export const routes: Routes = [
   { path: '', component: Entry, pathMatch: 'full' },
@@ -25,6 +26,7 @@ export const routes: Routes = [
       { path: 'pets/:petId/vaccinations/:vaccinationId/certificate', component: CertificatePage },
       { path: 'pets/:petId', component: PetDetails },
       { path: 'pets', component: PetsPage },
+      { path: 'pets/:petId/vaccinations/update', component: UpdateRecord },
     ],
   },
   { path: 'signin', redirectTo: 'signup', pathMatch: 'full' },

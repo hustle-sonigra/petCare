@@ -85,7 +85,12 @@
 >
   {{ deletingIds().includes(record.id) ? 'Deleting…' : 'Delete' }}
 </button>
-
+<button
+type="button"
+(click)="editVaccineRecord(record.id)"
+>
+EDIT
+</button>
             <section
               class="certificate-section"
               [attr.aria-label]="record.vaccineName + ' certificate'"
@@ -146,3 +151,24 @@
     }
   }
 </main>
+
+<!-- // edit is to have the existing entry in the DB update 
+// there is a current entry as of now , we just have to update it to form something new 
+// this something new is just a reflection of what we need to have in the newer section 
+// important to consider that we have to make sure that we have what we want 
+//  -->
+
+<!-- // the important point here is the complete edit flow 
+// what do we want to edit ? 
+// we want to edit the vaccine data 
+// this is in the vaccination record , no need to update the uploaded certificate -->
+
+<!-- // FLOW 
+// index.html , has a click property , (click)=editVaccineRecord("recordId")
+// this method has its implementation in the details.ts file 
+// Update request to the backend 
+// flow to a new page , where we have the form already prefilled with the 
+// current data that we have , in this we are ok to modify the prefilled sections 
+// of the form and update send a request to the backend , this new enrty is 
+// added to the DB , then we have things moving where we. -->
+

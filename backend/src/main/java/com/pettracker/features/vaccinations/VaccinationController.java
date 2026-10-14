@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,7 @@ import com.pettracker.features.vaccinations.persistence.VaccinationRecordReposit
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import jakarta.servlet.http.HttpServletRequest;
 import com.pettracker.features.auth.AuthTokenFilter;
 
@@ -49,6 +51,30 @@ public class VaccinationController {
     }
 
     private UUID owner(HttpServletRequest request) { Object id = request.getAttribute(AuthTokenFilter.OWNER_ID); if (id instanceof UUID ownerId) return ownerId; throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required"); }
+
+    @PutMapping("/vaccinations/{recordId}")
+    @Transactional
+    public VaccinationResponse update(@PathVariable UUID recordId,
+            @Valid @RequestBody UpdateVaccination request, HttpServletRequest httpRequest) {
+        UUID ownerId = owner(httpRequest);
+        VaccinationRecord record = records.findById(recordId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vaccination not found"));
+        pets.find(record.getPet().getId(), ownerId);
+        if (request.nextDueOn() != null && !request.nextDueOn().isAfter(request.administeredOn())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "The next due date must be after the administration date");
+        }
+        record.update(request.vaccineName().trim(), request.administeredOn(), request.nextDueOn(),
+                request.provider(), request.notes());
+        return VaccinationResponse.from(records.save(record));
+    }
+
+    public record UpdateVaccination(
+            @NotBlank @Size(max = 120) String vaccineName,
+            @NotNull LocalDate administeredOn,
+            LocalDate nextDueOn,
+            @Size(max = 160) String provider,
+            @Size(max = 2000) String notes) {}
 
     public record CreateVaccination(@JsonAlias("pet_id") UUID petId, @NotBlank @JsonAlias("vaccine_name") String vaccineName, @NotNull @JsonAlias("administered_on") LocalDate administeredOn, @JsonAlias("next_due_on") LocalDate nextDueOn, String provider, String notes) {}
     public record VaccinationResponse(UUID id, UUID petId, String vaccineName, LocalDate administeredOn, LocalDate nextDueOn, String provider, String notes) {

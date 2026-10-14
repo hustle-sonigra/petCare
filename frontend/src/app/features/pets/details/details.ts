@@ -3,7 +3,7 @@ import { DestroyRef } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink , Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import {
   ApiClientService,
@@ -34,6 +34,7 @@ export class PetDetails {
   readonly pet = signal<PetSummary | null>(null);
   readonly vaccinations = signal<VaccinationRecord[]>([]);
   readonly loading = signal(true);
+  private router = inject(Router);
   readonly error = signal('');
   readonly deletingIds = signal<string[]>([]);
   readonly deleteError = signal('');
@@ -166,6 +167,7 @@ export class PetDetails {
     },
   });
   }
+
   // DB structure : 
   // there has to be an owner 
   // each pet created is linked to an owner
@@ -174,4 +176,10 @@ export class PetDetails {
   // we need to move from that to a pet 
   // get the pet from the vaccine record 
   // from that get the 
+
+  editVaccineRecord(recordId: string): void {
+    void this.router.navigate(['/pets', this.petId, 'vaccinations', 'update'], {
+      queryParams: { vaccinationId: recordId },
+    });
+  }
 }

@@ -1,0 +1,25 @@
+<main class="page-shell narrow" [attr.aria-busy]="loading() || saving()">
+  <a class="back-link" [routerLink]="['/pets', petId()]">← Pet profile</a>
+  <p class="eyebrow">Vaccination history</p>
+  <h1>Edit vaccination</h1>
+  @if (loading()) {
+    <p role="status">Loading vaccination…</p>
+  } @else if (vaccinationId()) {
+    <form class="panel form-panel form-stack" [formGroup]="form" (ngSubmit)="submit()">
+      <label for="vaccine">Vaccine name</label>
+      <input id="vaccine" formControlName="vaccineName" required maxlength="120" />
+      <label for="administered">Administration date</label>
+      <input id="administered" type="date" formControlName="administeredOn" required />
+      <label for="due">Next due date <small>Optional</small></label>
+      <input id="due" type="date" formControlName="nextDueOn" />
+      <label for="provider">Veterinarian or clinic <small>Optional</small></label>
+      <input id="provider" formControlName="provider" maxlength="160" />
+      <label for="notes">Notes <small>Optional</small></label>
+      <textarea id="notes" formControlName="notes" maxlength="2000"></textarea>
+      <div class="form-actions">
+        <button type="submit" [disabled]="saving()">{{ saving() ? 'Updating…' : 'Update' }}</button>
+      </div>
+    </form>
+  }
+  @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+</main>

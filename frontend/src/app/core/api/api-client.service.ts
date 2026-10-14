@@ -43,6 +43,8 @@ export interface AddVaccinationRequest {
   notes: string;
 }
 
+export type UpdateVaccinationRequest = Omit<AddVaccinationRequest, 'petId'>;
+
 export interface VaccinationSummary {
   id: string;
   petId: string;
@@ -94,6 +96,10 @@ export class ApiClientService {
 
   addVaccination(request: AddVaccinationRequest): Observable<VaccinationRecord> {
     return this.http.post<VaccinationRecord>(`${this.apiUrl}/vaccinations`, request);
+  }
+
+  updateVaccination(recordId: string, request: UpdateVaccinationRequest): Observable<VaccinationRecord> {
+    return this.http.put<VaccinationRecord>(`${this.apiUrl}/vaccinations/${recordId}`, request);
   }
   extractCertificate(file: File): Observable<VaccinationExtraction> {
     const body = new FormData();

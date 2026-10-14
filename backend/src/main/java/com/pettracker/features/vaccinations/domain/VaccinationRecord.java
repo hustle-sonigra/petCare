@@ -77,6 +77,15 @@ public class VaccinationRecord {
         }
     }
 
+    public void update(String vaccineName, LocalDate administeredOn, LocalDate nextDueOn,
+            String provider, String notes) {
+        this.vaccineName = vaccineName;
+        this.administeredOn = administeredOn;
+        this.nextDueOn = nextDueOn;
+        this.provider = provider;
+        this.notes = notes;
+    }
+
     public UUID getId() {
         return id;
     }

@@ -101,3 +101,65 @@
 .certificate-error p {
   margin-bottom: 8px;
 }
+/* Record action buttons */
+.record > button {
+  margin-top: 20px;
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* Delete button */
+.record > button:first-of-type {
+  background: #fff1ef;
+  color: #b42318;
+  border-color: #f2c5bf;
+}
+
+.record > button:first-of-type:hover:not(:disabled) {
+  background: #b42318;
+  border-color: #b42318;
+  color: #ffffff;
+}
+
+/* Edit button */
+.record > button:nth-of-type(2) {
+  margin-left: 8px;
+  background: var(--leaf);
+  color: var(--forest);
+  border-color: var(--leaf);
+}
+
+.record > button:nth-of-type(2):hover {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+
+/* Disabled state while deleting */
+.record > button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Keyboard accessibility */
+.record > button:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .record > button {
+    padding: 10px 14px;
+  }
+}
