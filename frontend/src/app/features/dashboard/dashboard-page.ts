@@ -8,6 +8,7 @@ import {
   VaccinationSummary,
 } from '../../core/api/api-client.service';
 import { calendarDate, latestVaccinations, upcomingLimit } from '../../shared/utils/vaccinations';
+import { LocationService } from '../../core/location/location.service';
 
 interface HouseholdRecord extends VaccinationSummary {
   petName: string;
@@ -21,6 +22,7 @@ interface HouseholdRecord extends VaccinationSummary {
 })
 export class DashboardPage {
   private readonly api = inject(ApiClientService);
+  private readonly location = inject(LocationService);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly pets = signal<PetSummary[]>([]);
@@ -49,6 +51,7 @@ export class DashboardPage {
 
   constructor() {
     this.load();
+    void this.location.initialize();
   }
 
   load(): void {

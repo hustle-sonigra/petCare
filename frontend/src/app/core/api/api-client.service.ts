@@ -68,6 +68,15 @@ export interface VaccinationExtraction {
   warnings: Partial<Record<ExtractionField, string>>;
   evidence: Partial<Record<ExtractionField, string>>;
 }
+export interface NearbyVet {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  distanceKm: number;
+  address: string;
+  mapUrl: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApiClientService {
@@ -138,5 +147,10 @@ deleteVaccine(recordId: string):Observable<void>{
 return this.http.delete<void>(
     `${this.apiUrl}/vaccinations/${recordId}`,
   );
+}
+getNearbyVets(lat: number, lon: number): Observable<NearbyVet[]> {
+  return this.http.get<NearbyVet[]>(`${this.apiUrl}/vets/nearby`, {
+    params: { lat, lon },
+  });
 }
 }

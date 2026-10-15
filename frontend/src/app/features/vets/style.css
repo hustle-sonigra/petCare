@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.vet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.vet-card {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.vet-card h2 { margin-bottom: 8px; }
+.vet-card p { color: var(--muted); }
+.vet-card .distance { color: var(--forest); font-weight: 700; }
+.search-status, .search-error { margin-top: 28px; }
+.search-error { color: var(--coral); }
+.attribution { margin-top: 28px; color: var(--muted); font-size: 12px; }

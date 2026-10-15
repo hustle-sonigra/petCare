@@ -1,0 +1,42 @@
+<main class="page-shell">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Care close to home</p>
+      <h1>Nearby vets</h1>
+      <p class="page-description">Find veterinary care for your pets, sorted by approximate distance.</p>
+    </div>
+    <button type="button" (click)="findNearby()" [disabled]="loading()">
+      {{ loading() ? 'Searching…' : 'Use my location' }}
+    </button>
+  </header>
+
+  @if (loading()) {
+    <p class="search-status" role="status">Finding nearby clinics…</p>
+  }
+  @if (error()) {
+    <p class="search-error" role="alert">{{ error() }}</p>
+  }
+  @if (!loading() && !error() && vets().length === 0) {
+    <p class="search-status">
+      {{ searched() ? 'No veterinary clinics were found nearby.' : 'Use your location to find nearby clinics.' }}
+    </p>
+  }
+
+  @if (vets().length) {
+    <section class="vet-grid" aria-label="Nearby veterinary clinics">
+      @for (vet of vets(); track vet.id) {
+        <article class="vet-card">
+          <h2>{{ vet.name }}</h2>
+          <p class="distance">{{ vet.distanceKm.toFixed(1) }} km away, approximately</p>
+          @if (vet.address) {
+            <p>{{ vet.address }}</p>
+          }
+          <a [href]="vet.mapUrl" target="_blank" rel="noopener noreferrer">
+            View on OpenStreetMap <span aria-hidden="true">↗</span>
+          </a>
+        </article>
+      }
+    </section>
+  }
+  <p class="attribution">Clinic data © OpenStreetMap contributors</p>
+</main>
